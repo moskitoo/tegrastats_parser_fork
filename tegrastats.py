@@ -20,7 +20,8 @@ class Tegrastats:
         process = None
 
         try:
-            process = subprocess.Popen(cmd, shell=True)
+            # process = subprocess.Popen(cmd, shell=True)
+            process = subprocess.Popen(['sudo', 'bash', '-c', cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             print("Running tegrastats...\nEnter 'exit' to stop tegrastats and parse data\n")
         except subprocess.CalledProcessError:
             print(f"Error running tegrastats!\nCommand used {cmd}")

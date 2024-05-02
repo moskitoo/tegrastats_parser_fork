@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 class Tegrastats:
     def __init__(self, interval, log_file, verbose):
@@ -31,7 +32,9 @@ class Tegrastats:
             user_input = input()
             if (user_input == "exit"):
                 try:
-                    process.kill()
+                    # process.kill()
+                    # subprocess.run(['sudo', 'pkill', '-f', 'tegrastats'])
+                    os.system("sudo pkill -f tegrastats")
                     print("Successfully stopped tegrastats!")
                     break
                 except subprocess.CalledProcessError:

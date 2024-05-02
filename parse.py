@@ -54,8 +54,19 @@ class Parse:
             lookup_table[f'Average {label} Power Consumption (mW)'] = float(avg_vdd)
         return lookup_table
 
+    def parse_power_consumption(self, lookup_table, power_consumption):
+        labels = ["GPU", "GPU average", "CPU", "CPU average", "SOC", "SOC average", "CV", "CV average", "VDDRQ", "VDDRQ average", "SYS5V", "SYS5V average"]
+        for i, label in enumerate(labels):
+            # print(f"{label}: {power_consumption.group(i + 1)}")
+            lookup_table[f'Current {label} Power Consumption (mW)'] = float(power_consumption.group(i+1)[:-2])
+        return lookup_table  
+
+
+
     def parse_data(self, line):
         lookup_table = {}
+
+        # print(line)
 
         ram = re.findall(r'RAM ([0-9]*)\/([0-9]*)MB \(lfb ([0-9]*)x([0-9]*)MB\)', line)
         self.parse_ram(lookup_table, ram[0]) if ram else None
@@ -94,9 +105,14 @@ class Parse:
 
             vdds = re.findall(r'([A-Za-z0-9_]*) ([0-9]*)\/([0-9]*)', substring)
 
-        else:
-            vdds = re.findall(r'VDD_([A-Za-z0-9_]*) ([0-9]*)\/([0-9]*)', line)
-        self.parse_vdds(lookup_table, vdds) if vdds else None
+        # else:
+        #     vdds = re.findall(r'VDD_([A-Za-z0-9_]*) ([0-9]*)\/([0-9]*)', line)
+        # self.parse_vdds(lookup_table, vdds) if vdds else None
+
+        pattern = r'GPU (\d+mW)/(\d+mW) CPU (\d+mW)/(\d+mW) SOC (\d+mW)/(\d+mW) CV (\d+mW)/(\d+mW) VDDRQ (\d+mW)/(\d+mW) SYS5V (\d+mW)/(\d+mW)'
+
+        power_consumption = re.search(pattern, line)
+        self.parse_power_consumption(lookup_table, power_consumption) if power_consumption else None
 
         return lookup_table
 
@@ -123,6 +139,7 @@ class Parse:
 
                 for i, line in enumerate(data[1:]):
                     row = [i, time] + list(self.parse_data(line).values())
+                    print(row)
                     writer.writerow(row)
                     time = time + self.interval
 

@@ -117,7 +117,7 @@ class Parse:
         return lookup_table
 
     def create_header(self, line):
-        labels = ['Index', 'Time (mS)'] + list(self.parse_data(line).keys())
+        labels = ['Index', 'Time (ms)'] + list(self.parse_data(line).keys())
         return labels
 
     def parse_file(self):
@@ -139,7 +139,7 @@ class Parse:
 
                 for i, line in enumerate(data[1:]):
                     row = [i, time] + list(self.parse_data(line).values())
-                    print(row)
+                    # print(row)
                     writer.writerow(row)
                     time = time + self.interval
 
